@@ -8,11 +8,5 @@ install:
     - nvm use 0.12.4
     - npm install -g npm@2.10.1
 
-    # Hack to fix package conflict between uritemplate and uritemplate.py (dependency of github3.py)
-    - pip uninstall uritemplate.py --yes
-    - pip install uritemplate.py==0.3.0
-    - travis_retry invoke assets --dev
-
-
 script:
     - invoke test_travis_$TEST_BUILD -n 4
