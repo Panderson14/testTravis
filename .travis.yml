@@ -1,2 +1,29 @@
 language: python
+python:
+    - "2.7"
 sudo: false
+
+install:
+    - nvm install 0.12.4
+    - nvm use 0.12.4
+    - npm install -g npm@2.10.1
+    - cd $PROJECT_DIR
+    - cp website/settings/local-travis.py website/settings/local.py
+    - cp api/base/settings/local-travis.py api/base/settings/local.py
+    - '[ -d $HOME/preprints ] || ( mkdir -p $HOME/preprints && touch $HOME/preprints/index.html )'
+
+    - travis_retry pip install --upgrade pip
+    - travis_retry pip install invoke==0.13.0
+    - travis_retry pip install flake8==2.4.0 --force-reinstall --upgrade
+    - travis_retry npm install jshint
+    - travis_retry invoke wheelhouse --dev --addons
+    - travis_retry invoke travis_addon_settings
+    - travis_retry invoke requirements --dev --addons
+    # Hack to fix package conflict between uritemplate and uritemplate.py (dependency of github3.py)
+    - pip uninstall uritemplate.py --yes
+    - pip install uritemplate.py==0.3.0
+    - travis_retry invoke assets --dev
+
+
+script:
+    - invoke test_travis_$TEST_BUILD -n 4
