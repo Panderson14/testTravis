@@ -2,6 +2,6 @@ language: python
 
 sudo: false
 
-install: "pip install -r requirements.txt"
+install: true
 
 script: pytest
